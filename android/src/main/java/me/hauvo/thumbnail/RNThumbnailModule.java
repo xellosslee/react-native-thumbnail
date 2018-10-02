@@ -1,5 +1,5 @@
 
-package me.hauvo.thumbnail;
+package com.reactlibrary;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -36,13 +36,22 @@ public class RNThumbnailModule extends ReactContextBaseJavaModule {
   public String getName() {
     return "RNThumbnail";
   }
-
+  
   @ReactMethod
   public void get(String filePath, Promise promise) {
+    getThumb(filePath, 0, 100, promise);
+  }
+
+  @ReactMethod
+  public void get(String filePath, long microSeconds, int compression, Promise promise) {
+    getThumb(filePath, microSeconds, compression, promise);
+  }
+
+  public void getThumb(String filePath, long microSeconds, int compression, Promise promise) {
     filePath = filePath.replace("file://","");
     MediaMetadataRetriever retriever = new MediaMetadataRetriever();
     retriever.setDataSource(filePath);
-    Bitmap image = retriever.getFrameAtTime(1000000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+    Bitmap image = retriever.getFrameAtTime(microSeconds, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 
     String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/thumb";
 
@@ -60,7 +69,7 @@ public class RNThumbnailModule extends ReactContextBaseJavaModule {
       fOut = new FileOutputStream(file);
 
       // 100 means no compression, the lower you go, the stronger the compression
-      image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+      image.compress(Bitmap.CompressFormat.JPEG, compression, fOut);
       fOut.flush();
       fOut.close();
 

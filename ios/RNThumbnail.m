@@ -13,7 +13,31 @@
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(get:(NSString *)filepath resolve:(RCTPromiseResolveBlock)resolve
-                               reject:(RCTPromiseRejectBlock)reject)
+                                reject:(RCTPromiseRejectBlock)reject)
+{
+  [getThumb filepath:filepath
+            microSeconds:0
+            compression:100
+            resolve:resolve
+            reject:reject];  
+}
+
+RCT_EXPORT_METHOD(get:(NSString *)filepath resolve:(RCTPromiseResolveBlock)resolve
+                                microSeconds:(long)microSeconds
+                                compression:(int)compression
+                                reject:(RCTPromiseRejectBlock)reject)
+{
+  [getThumb filepath:filepath
+            microSeconds:microSeconds
+            compression:compression
+            resolve:resolve
+            reject:reject];
+}
+
+- getThumb:(NSString *)filepath microSeconds:(long)microSeconds
+                                compression:(int)compression
+                                resolve:(RCTPromiseResolveBlock)resolve
+                                reject:(RCTPromiseRejectBlock)reject
 {
     @try {
         filepath = [filepath stringByReplacingOccurrencesOfString:@"file://"
@@ -25,7 +49,7 @@ RCT_EXPORT_METHOD(get:(NSString *)filepath resolve:(RCTPromiseResolveBlock)resol
         generator.appliesPreferredTrackTransform = YES;
         
         NSError *err = NULL;
-        CMTime time = CMTimeMake(1, 60);
+        CMTime time = CMTimeMake(microSeconds, 1000000);
         
         CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&err];
         UIImage *thumbnail = [UIImage imageWithCGImage:imgRef];
@@ -34,7 +58,7 @@ RCT_EXPORT_METHOD(get:(NSString *)filepath resolve:(RCTPromiseResolveBlock)resol
                                                                        NSUserDomainMask,
                                                                        YES) lastObject];
         
-        NSData *data = UIImageJPEGRepresentation(thumbnail, 1.0);
+        NSData *data = UIImageJPEGRepresentation(thumbnail, compression / 100);
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *fullPath = [tempDirectory stringByAppendingPathComponent: [NSString stringWithFormat:@"thumb-%@.jpg", [[NSProcessInfo processInfo] globallyUniqueString]]];
         [fileManager createFileAtPath:fullPath contents:data attributes:nil];
