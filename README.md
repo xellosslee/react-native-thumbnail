@@ -35,11 +35,17 @@ Get thumbnail from local media. Currently, it only supports for video.
       compile project(':react-native-thumbnail')
   	```
 
-## Usage
+## Usage 소소한 기능 확장
 ```javascript
 import RNThumbnail from 'react-native-thumbnail';
 
+// 기본 설정인 0초, 품질 100% 로 Thumbnail을 가져온다.
 RNThumbnail.get(filepath).then((result) => {
+  console.log(result.path); // thumbnail path
+})
+
+// 1초(마이크로초 단위)후의 영상 스냅샷을 80% 품질로 가져온다.
+RNThumbnail.get(filepath, 1000000, 80).then((result) => {
   console.log(result.path); // thumbnail path
 })
 ```
