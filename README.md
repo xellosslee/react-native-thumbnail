@@ -35,7 +35,7 @@ Get thumbnail from local media. Currently, it only supports for video.
       compile project(':react-native-thumbnail')
   	```
 
-## Usage
+## Usage 소소한 기능 확장
 ```javascript
 import RNThumbnail from 'react-native-thumbnail';
 
